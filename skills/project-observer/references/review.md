@@ -33,9 +33,16 @@ directory written out as a literal path.
 
    Before proposing a new check, read the checks the project already has:
    the lint and test scripts in its build file, the pre-commit config, the
-   CI workflow. A check that exists but is not wired in, or is broken, is
-   the change to propose. A project where no check runs on commit or in CI
-   is a finding of its own: say so in the review record.
+   CI workflow. Extend a check that exists before adding a new one, and
+   repair its wiring (a script pointing at the wrong folder, a config that
+   skips the test files) in the same change. A project where no check runs
+   on commit or in CI is a finding of its own: put it in the review record
+   for the user to take to the team.
+
+   A proposed check counts only once it has gone red: run it against the
+   code that made the mistake and show it failing there. When it cannot
+   run in this environment (missing dependency, no network), say so in the
+   proposal.
 
    Then give each lesson the first destination that fits:
 
@@ -50,9 +57,10 @@ directory written out as a literal path.
    | skill | the lesson is about a skill: export it (`generalize.md`, Export) |
    | decline | already covered, a one-off, or not worth the change; say which |
 
-   A lesson with a recurrence after its fix (`pobs.py counts` lists them
-   under M5) shows the first change did not hold: propose a stronger form
-   (a check instead of a rule, a helper instead of a rule), and say so.
+   A fix that already failed calls for a stronger form (a check instead of
+   a rule, a helper instead of a rule): a recurrence after the fix
+   (`pobs.py counts` lists them under M5), or a mistake made while a rule
+   against it already stood. Say which applies.
 
 4. **Present, then ask.** Show the buckets with their counts, then each
    lesson: id, title, destination, the exact change (the lines to add or
