@@ -17,20 +17,27 @@ Eoghan Henn / rebelytics.com, CC BY 4.0.
 
 ## Install
 
-Install both; project-review uses project-observer's script.
+Both skills ship as one plugin, `project-observer`, in this repo's
+marketplace. In Claude Code:
 
-```bash
-cp -R skills/project-observer skills/project-review ~/.claude/skills/
+```
+/plugin marketplace add <owner>/<repo>
+/plugin install project-observer@project-observer-skills
 ```
 
-Then check the scripts on the bundled fixture:
+The skills then appear as `project-observer:project-observer` and
+`project-observer:project-review`. The plugin also adds a SessionStart hook
+that prints one line, and only in a project whose log exists.
+
+Check the scripts on the bundled fixture from a clone of this repo:
 
 ```bash
-python3 ~/.claude/skills/project-observer/scripts/pobs.py selftest
+python3 plugins/project-observer/skills/project-observer/scripts/pobs.py selftest
 ```
 
 The skills do nothing in a project until `pobs.py init` has created its
-log; set-up steps are in `skills/project-observer/SKILL.md`.
+log; set-up steps are in
+`plugins/project-observer/skills/project-observer/SKILL.md`.
 
 ## Where data lives
 

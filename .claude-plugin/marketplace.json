@@ -1,0 +1,14 @@
+{
+  "name": "project-observer-skills",
+  "owner": {
+    "name": "Marcin Szupke"
+  },
+  "description": "A project's own record of what went wrong, kept with the project and used in review.",
+  "plugins": [
+    {
+      "name": "project-observer",
+      "source": "./plugins/project-observer",
+      "description": "Log lessons from one project in a local, never-committed log; review them into checks, tests and project files; export only leak-checked generalized copies; check diffs against the lessons."
+    }
+  ]
+}

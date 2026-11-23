@@ -1,0 +1,12 @@
+{
+  "name": "project-observer",
+  "displayName": "Project Observer",
+  "description": "Two skills: project-observer keeps a local log of lessons from one project, reviews them into project changes and writes leak-checked generalized copies; project-review checks a diff against those lessons and records each proposal's outcome.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Marcin Szupke",
+    "url": "https://mapell.dev"
+  },
+  "license": "CC-BY-4.0",
+  "keywords": ["observation-log", "lessons", "code-review", "testing", "retrospective"]
+}

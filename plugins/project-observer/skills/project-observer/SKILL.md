@@ -77,20 +77,9 @@ offer is made or not due.
    guess: client, product, service, team and people names, internal
    hostnames, the ticket prefix (`ABC-`). Ordinary words make noise; ask
    the user to drop them.
-3. Offer activation that stays local: a SessionStart hook in
-   `.claude/settings.local.json`. Check that file is ignored
-   (`git check-ignore .claude/settings.local.json` prints the path);
-   if not, add `/.claude/settings.local.json` to `.git/info/exclude`.
-
-```json
-{
-  "hooks": {
-    "SessionStart": [{ "hooks": [{ "type": "command",
-      "command": "d=$(python3 <base directory>/scripts/pobs.py root 2>/dev/null) && test -d \"$d\" && echo 'Project observation log active: load the project-observer skill. Observations from this project go to its log, not to the global task-observer log.' || true"
-    }] }]
-  }
-}
-```
+3. Tell the user activation needs nothing more: the plugin's SessionStart
+   hook prints "Project observation log active" in every session started in
+   a project whose log exists, and stays silent everywhere else.
 
 ## What is a lesson
 
@@ -178,6 +167,9 @@ Field rules:
 - `skill:` lists skills the lesson concerns (empty for most).
 - `reference:` is a path inside the log directory to saved evidence (a
   test output, a log excerpt). Ticket ids go in `session_context`.
+- `pilot: true` (optional, also on proposals and review records) marks an
+  entry made during a trial period the user named; `counts` leaves it out.
+  Add it only when the user has said the trial period is on.
 - `resolution_files`, `resolution_commit`, `resolved`, `resolution` are
   filled by the review (`references/review.md`), never at logging time.
 - `already_held` belongs to the user: at the end of the run they label

@@ -218,6 +218,8 @@ def lint(log):
         for k in REQUIRED[kind]:
             if fm.get(k) in (None, "", []):
                 errors.append(f"{p}: missing {k}")
+        if fm.get("pilot", "") not in ("", "true", "false"):
+            errors.append(f"{p}: pilot must be true, false or empty")
         return True
 
     for i, entries in by_id.items():
@@ -440,8 +442,12 @@ def cmd_counts(log, args):
     def in_window(d):
         return d is not None and (start is None or start <= d < end)
 
-    obs = [fm for _, fm in load(log, "observations", archive=True) if fm and as_date(fm.get("date"))]
-    by_id = {as_int(fm["id"]): fm for fm in obs}
+    def pilot(fm):
+        return fm.get("pilot") == "true"
+
+    obs_all = [fm for _, fm in load(log, "observations", archive=True) if fm and as_date(fm.get("date"))]
+    by_id = {as_int(fm["id"]): fm for fm in obs_all}
+    obs = [fm for fm in obs_all if not pilot(fm)]
     window = [fm for fm in obs if in_window(as_date(fm["date"]))]
     lessons = [fm for fm in window if not fm.get("recurs")]
     recurs = [fm for fm in window if fm.get("recurs")]
@@ -452,6 +458,9 @@ def cmd_counts(log, args):
           else "window: all dates, ISO weeks (pass --start for experiment weeks)")
     print(f"lessons: {len(lessons)} distinct, {len(recurs)} recurrences, "
           f"{len(obs) - len(window)} outside the window")
+    n_pilot = {k: sum(1 for _, fm in load(log, k, archive=k == "observations") if fm and pilot(fm))
+               for k in ("observations", "proposals", "reviews")}
+    print("pilot entries left out of every count: " + ", ".join(f"{v} {k}" for k, v in n_pilot.items()))
 
     print("\n## M1 lessons per week by category")
     print("| week | " + " | ".join(CATEGORIES) + " | recurrences |")
@@ -522,7 +531,7 @@ def cmd_counts(log, args):
     print(f"M5 repeats before a fix: {before}")
 
     print("\n## M6 review minutes")
-    revs = [fm for _, fm in load(log, "reviews") if fm and in_window(as_date(fm.get("date")))]
+    revs = [fm for _, fm in load(log, "reviews") if fm and not pilot(fm) and in_window(as_date(fm.get("date")))]
     print("| week | observer reviews | observer minutes | diff reviews | diff minutes |")
     print("|---|---|---|---|---|")
     for w in sorted({week(as_date(fm["date"])) for fm in revs}, key=lambda w: (len(w), w)):
@@ -536,7 +545,7 @@ def cmd_counts(log, args):
         print(f"M6 {k}: {sum(as_int(fm.get('minutes')) or 0 for fm in rs)} min in {len(rs)} reviews")
 
     print("\n## project-review proposals")
-    props = [fm for _, fm in load(log, "proposals") if fm and in_window(as_date(fm.get("date")))]
+    props = [fm for _, fm in load(log, "proposals") if fm and not pilot(fm) and in_window(as_date(fm.get("date")))]
     oc = {v: sum(1 for fm in props if fm.get("outcome") == v) for v in OUTCOME}
     print(f"proposals: {len(props)} (accepted {oc['accepted']}, declined {oc['declined']}, pending {oc['pending']})")
     print(f"proposals accepted, of decided: {pct(oc['accepted'], oc['accepted'] + oc['declined'])}")
@@ -597,8 +606,8 @@ def cmd_selftest(log_unused, args):
             f.write((fixture / "denylist.txt").read_text())
 
         # next-id: max of files, archive and floor, plus one; floor follows
-        expect(run("next-id", "observations"), "0009")
         expect(run("next-id", "observations"), "0010")
+        expect(run("next-id", "observations"), "0011")
         expect(run("next-id", "proposals"), "0004")
 
         # leakcheck: normalized term match, built-in e-mail pattern, result recorded
@@ -638,13 +647,14 @@ def cmd_selftest(log_unused, args):
 
         # list: one line per record, archive included
         expect(run("list"), "0005 open test-design recurs:1 generalized:no | Fixed sleep",
-               "0001 actioned test-design recurs:- generalized:yes", "list: 8 observations")
+               "0001 actioned test-design recurs:- generalized:yes", "list: 9 observations")
         expect(run("list", "proposals"), "0003 pending lessons:1,5 run:2025-03-18-1030-diff")
 
         # counts: every metric on the fixture, experiment weeks from --start
         out = run("counts", "--start", "2025-03-03", "--verify-commits")
         expect(out,
                "lessons: 4 distinct, 3 recurrences, 1 outside the window",
+               "pilot entries left out of every count: 1 observations, 0 proposals, 0 reviews",
                "| 1 | 1 | 1 | 0 | 0 | 0 | 0 | 1 |",
                "| 2 | 0 | 0 | 1 | 0 | 1 | 0 | 0 |",
                "| 3 | 0 | 0 | 0 | 0 | 0 | 0 | 2 |",
@@ -671,7 +681,7 @@ def cmd_selftest(log_unused, args):
         assert (log / "observations/archive/0001-wait-for-ui-not-timers.md").exists()
         checks += 1
         expect(run("counts", "--start", "2025-03-03"), "lessons: 4 distinct, 3 recurrences")
-        expect(run("next-id", "observations"), "0011")
+        expect(run("next-id", "observations"), "0012")
 
         # an empty denylist is refused, never read as "no leaks"
         (log / "denylist.txt").write_text("# nothing yet\n")

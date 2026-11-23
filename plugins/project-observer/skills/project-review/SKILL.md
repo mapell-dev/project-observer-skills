@@ -17,8 +17,9 @@ before, and most lessons in that record are not in CLAUDE.md yet. This
 skill reads that record. Every proposal cites the lesson it comes from; a
 finding without a lesson belongs to those other reviews.
 
-Requires the `project-observer` skill installed next to this one: the
-script is `<this skill's base directory>/../project-observer/scripts/pobs.py`.
+Ships in the same plugin as `project-observer:project-observer`, which owns
+the log; the script is
+`<this skill's base directory>/../project-observer/scripts/pobs.py`.
 Run it from inside the project checkout, written out as a literal path.
 Licence: CC BY 4.0. Feedback: mapell.dev.
 
@@ -82,7 +83,8 @@ reason:
 
 8. **Recurrence.** When a finding matches a lesson whose fix has landed
    (`status: actioned` with a `resolution_commit`), the mistake came back
-   after the fix. Log it through project-observer as a new observation
+   after the fix. Log it with the `project-observer:project-observer` skill
+   (its How to log section) as a new observation
    with `recurs:` set to the lesson's first observation: the matched
    entry's own id, or its `recurs` value if it is itself a recurrence.
    Name the new observation when you present the proposals.

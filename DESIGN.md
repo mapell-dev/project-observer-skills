@@ -42,13 +42,22 @@ mistakes. A finding with no lesson behind it belongs to those reviews.
 
 ## Files
 
+One plugin, `project-observer`, in a single-plugin marketplace
+(`project-observer-skills`). Under a plugin the skills are namespaced:
+`project-observer:project-observer` and `project-observer:project-review`.
+They stay siblings in one plugin because project-review runs
+`../project-observer/scripts/pobs.py`.
+
 ```
-skills/project-observer/SKILL.md            session start, set-up, what and how to log
-skills/project-observer/references/review.md       weekly review: lessons into project changes
-skills/project-observer/references/generalize.md   generalize, leak check, human read, export
-skills/project-observer/scripts/pobs.py     all mechanics, stdlib Python, one file
-skills/project-observer/scripts/fixture/    fake project log (Quokka Ledger, Bramblecorp, QKL-)
-skills/project-review/SKILL.md              diff review; uses ../project-observer/scripts/pobs.py
+.claude-plugin/marketplace.json                   marketplace, source ./plugins/project-observer
+plugins/project-observer/.claude-plugin/plugin.json
+plugins/project-observer/hooks/hooks.json         SessionStart: one line, only where a log exists
+plugins/project-observer/skills/project-observer/SKILL.md            session start, set-up, what and how to log
+plugins/project-observer/skills/project-observer/references/review.md       review: lessons into project changes
+plugins/project-observer/skills/project-observer/references/generalize.md   generalize, leak check, human read, export
+plugins/project-observer/skills/project-observer/scripts/pobs.py     all mechanics, stdlib Python, one file
+plugins/project-observer/skills/project-observer/scripts/fixture/    fake project log (Quokka Ledger, Bramblecorp, QKL-)
+plugins/project-observer/skills/project-review/SKILL.md              diff review; uses ../project-observer/scripts/pobs.py
 ```
 
 The log in a project:
@@ -97,8 +106,8 @@ Design choices behind the fields:
 
 ## Self-checks
 
-`python3 skills/project-observer/scripts/pobs.py selftest` builds a temp git
-repo, runs `init`, loads the fixture, and asserts 57 facts across every
+`python3 plugins/project-observer/skills/project-observer/scripts/pobs.py selftest`
+builds a temp git repo, runs `init`, loads the fixture, and asserts 58 facts across every
 command (ids, leak check, lint, list, counts M1 to M6 and proposals, archive,
 empty-denylist refusal). Mutation checks: weakening the term normalization,
 the recurrence date rule, the first-result rule, the ticket-prefix boundary
@@ -130,9 +139,10 @@ fake project, with scripted user answers.
    it is visible next to the code and shared by worktrees; the risk is a
    `git clean -x`, which deletes ignored files. The review backs it up to
    `~/.project-observer-backups/`. Chosen: in the checkout.
-2. **Activation at the company.** A SessionStart hook in
-   `.claude/settings.local.json` (local, git-ignored) tells the session the
-   log is active. Your global `~/.claude/CLAUDE.md` also makes task-observer
+2. **Activation at the company.** The plugin's own SessionStart hook tells
+   the session the log is active, in any project where `.project-observer/`
+   exists, and prints nothing elsewhere. Nothing is written into the
+   company repo, not even `.claude/settings.local.json`. Your global `~/.claude/CLAUDE.md` also makes task-observer
    start every session; for company sessions the routing rule above depends
    on the agent following project-observer over task-observer. A one-line
    addition to the global CLAUDE.md would make that explicit: "In a repo
@@ -147,9 +157,23 @@ fake project, with scripted user answers.
    observation only when the matched lesson's fix has landed (that is M5
    data). A diff repeating an open lesson becomes a proposal only.
 
+## Pending: pilot label (Marcin's decision)
+
+The brief proposes that observations made before Marcin's predictions are
+labelled `pilot` and kept out of M1 to M6; Marcin has not accepted it yet.
+Supported but optional: `pilot: true` on an observation, proposal or review
+record leaves it out of every count, and `counts` prints how many it left
+out. A recurrence may still point at a pilot lesson. Nothing requires the
+field, and the skill sets it only when the user says the trial period is
+on. If Marcin declines the rule, the field goes unused.
+
 ## Go-live gate
 
-Not to be installed in the company project until all hold:
+Installing the plugin (user scope) makes both skills available in every
+project, the company one included; they stay inert until `pobs.py init`
+creates a log. So the gate is on running `init` in the company project, and
+on installing the plugin on the machine used for company work. Neither
+happens until all hold:
 
 - Marcin's predictions for M1 to M6 are written in
   `publishing-platform/project-observer/BRIEF.md`, Experiment plan;
@@ -162,4 +186,6 @@ Not to be installed in the company project until all hold:
   reading the list (an 8-week log is tens of entries). Add a path field and a
   matcher if the list outgrows one read.
 - No automatic minutes: Marcin's own number is the metric.
-- No plugin packaging: `cp -R` into `~/.claude/skills/` installs both.
+- No public marketplace entry yet: the repo is local; the README's
+  `/plugin marketplace add <owner>/<repo>` needs the GitHub repo Marcin
+  names.

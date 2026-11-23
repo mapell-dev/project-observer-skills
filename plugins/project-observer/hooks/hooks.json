@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "d=$(python3 \"${CLAUDE_PLUGIN_ROOT}/skills/project-observer/scripts/pobs.py\" root 2>/dev/null) && test -d \"$d\" && echo 'Project observation log active (.project-observer/): load the project-observer:project-observer skill. Observations from this project go to that log, not to the global task-observer log.' || true"
+          }
+        ]
+      }
+    ]
+  }
+}
