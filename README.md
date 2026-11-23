@@ -42,8 +42,8 @@ copilot plugin install project-observer@project-observer-skills
 ```
 
 The SessionStart hook is written for Claude Code and has not been checked
-in Copilot, so do not rely on it there: ask for the project-observer skill
-by name in a project whose log exists.
+in Copilot. Activate the skill through your personal instructions instead
+(step 3 of "Set up a project").
 
 ### Other agents (Agent Skills)
 
@@ -58,9 +58,11 @@ gh skill install mapell-dev/project-observer-skills --all --agent <agent> --scop
 `gh skill install --help` lists the `--agent` values (for example
 `github-copilot`, `cursor`, `codex`, `gemini-cli`). Add `--pin <tag or
 commit>` to stay on one version, and read what you install first with
-`gh skill preview`. This route installs the skills only, with no
-SessionStart hook: ask for the project-observer skill by name in a project
-whose log exists.
+`gh skill preview`. Keep `--scope user`: the default scope is `project`,
+which writes the skills into the repository you are in (for Copilot,
+`.github/skills/`), a change to the project itself. This route installs the
+skills only, with no SessionStart hook; activate them through your personal
+instructions (step 3 of "Set up a project").
 
 Check the scripts on the bundled fixture from a clone of this repo:
 
@@ -86,8 +88,22 @@ project, from a session started in the project's checkout:
    with this list, so do this before you export anything.
 3. **Activation.** With the Claude Code plugin, nothing more: the
    SessionStart hook prints "Project observation log active" in every
-   session started in a project whose log exists. Elsewhere, ask for the
-   project-observer skill by name at the start of a session.
+   session started in a project whose log exists. Other agents load a skill
+   only when they decide its description fits the request, and some list
+   extra skills by name alone, so a session can run start to finish without
+   it. Add this line to your personal instructions, which the agent reads
+   in every session:
+
+   > In a repository with a `.project-observer/` directory, load the
+   > project-observer skill and run its Session start steps before other
+   > work.
+
+   For GitHub Copilot, in VS Code and in the CLI, that file is
+   `~/.copilot/copilot-instructions.md` (create it if it is missing; start
+   a new chat or session to pick it up; the CLI's `/instructions` lists
+   what is loaded). For other agents, use their user-level instructions
+   file. Do not put the line in a file inside the repository: that changes
+   the project for everyone.
 4. **Optional: a trial period.** If the first weeks should not count, tell
    the agent the trial period is on. It then marks new entries
    `pilot: true`, and `counts` leaves them out. Tell it when the trial
