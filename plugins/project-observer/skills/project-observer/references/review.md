@@ -35,14 +35,24 @@ directory written out as a literal path.
    the lint and test scripts in its build file, the pre-commit config, the
    CI workflow. Extend a check that exists before adding a new one, and
    repair its wiring (a script pointing at the wrong folder, a config that
-   skips the test files) in the same change. A project where no check runs
-   on commit or in CI is a finding of its own: put it in the review record
-   for the user to take to the team.
+   skips the test files, a missing folder skipped without an error) in the
+   same change. A project where no check runs on commit or in CI is a
+   finding of its own: tell the user when you present (step 4), and write
+   it into the review record (step 7) for them to take to the team.
 
-   A proposed check counts only once it has gone red: run it against the
-   code that made the mistake and show it failing there. When it cannot
-   run in this environment (missing dependency, no network), say so in the
-   proposal.
+   A proposed check counts only once it has gone red. Before presenting
+   it, run a copy of it from outside the checkout against the code that
+   made the mistake, and show it failing there and passing on the fixed
+   code. The working tree stays as it is until approval: work on copies,
+   or feed the old file in on stdin, and leave the user's uncommitted
+   changes where they are. A runner found elsewhere on this machine
+   counts; name it in the proposal. When no runner is available at all
+   (missing dependency, no network), say so in the proposal, and say too
+   which part of the fix stays unverified (the test the check guards, a
+   type-aware parser).
+
+   The proposed change also removes the mistake from the code, so the new
+   check passes on the tree it lands in.
 
    Then give each lesson the first destination that fits:
 
@@ -64,7 +74,7 @@ directory written out as a literal path.
 
 4. **Present, then ask.** Show the buckets with their counts, then each
    lesson: id, title, destination, the exact change (the lines to add or
-   the test to write). Ask for approval per lesson or for the whole set. A
+   the test to write), and for a check its red and green runs. Ask for approval per lesson or for the whole set. A
    dismissed or unanswered prompt is no approval: stop and ask in plain
    text.
 
