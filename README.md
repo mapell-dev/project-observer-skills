@@ -21,7 +21,7 @@ Both skills ship as one plugin, `project-observer`, in this repo's
 marketplace. In Claude Code:
 
 ```
-/plugin marketplace add <owner>/<repo>
+/plugin marketplace add mapell-dev/project-observer-skills
 /plugin install project-observer@project-observer-skills
 ```
 

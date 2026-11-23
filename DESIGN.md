@@ -147,33 +147,37 @@ fake project, with scripted user answers.
    on the agent following project-observer over task-observer. A one-line
    addition to the global CLAUDE.md would make that explicit: "In a repo
    with an active `.project-observer/` log, write observations there;
-   task-observer gets only generalized exports." Not made; your call.
+   task-observer gets only generalized exports." Added to Marcin's global
+   CLAUDE.md on 2026-11-23.
 3. **Licence and attribution.** CC BY 4.0 for the whole repo (task-observer
    is CC BY 4.0, and the adaptation must credit it), with "Marcin Szupke
-   (mapell.dev)" as author and mapell.dev as the feedback route until a
-   public repo exists. The LICENSE file holds a summary and the legal-code
-   link, not the full text; add the full text before publishing.
+   (mapell.dev)" as author. Feedback goes to the public repo,
+   https://github.com/mapell-dev/project-observer-skills. The LICENSE file
+   holds a summary, the attribution and the full legal code.
 4. **What the reviewer does on a recurrence.** project-review logs a new
    observation only when the matched lesson's fix has landed (that is M5
    data). A diff repeating an open lesson becomes a proposal only.
 
-## Pending: pilot label (Marcin's decision)
+## Pilot label (accepted 2026-11-23)
 
-The brief proposes that observations made before Marcin's predictions are
-labelled `pilot` and kept out of M1 to M6; Marcin has not accepted it yet.
-Supported but optional: `pilot: true` on an observation, proposal or review
+Observations made before Marcin's predictions are labelled `pilot` and kept
+out of M1 to M6; Marcin accepted this rule on 2026-11-23. Supported but
+optional: `pilot: true` on an observation, proposal or review
 record leaves it out of every count, and `counts` prints how many it left
 out. A recurrence may still point at a pilot lesson. Nothing requires the
 field, and the skill sets it only when the user says the trial period is
-on. If Marcin declines the rule, the field goes unused.
+on.
 
 ## Go-live gate
 
-Installing the plugin (user scope) makes both skills available in every
-project, the company one included; they stay inert until `pobs.py init`
-creates a log. So the gate is on running `init` in the company project, and
-on installing the plugin on the machine used for company work. Neither
-happens until all hold:
+The pilot started on 2026-11-23: Marcin installed the plugin at local scope
+in the company project. Every record made before the gate below opens
+carries `pilot: true`; the user tells the skill that the trial period is on.
+Before the first pilot lesson is exported, the denylist must hold his terms.
+
+The gate governs the counted run. The 8-week clock starts on the day the
+predictions are committed to the brief, and from then on no new record
+carries `pilot`. The gate opens when all hold:
 
 - Marcin's predictions for M1 to M6 are written in
   `publishing-platform/project-observer/BRIEF.md`, Experiment plan;
@@ -186,6 +190,3 @@ happens until all hold:
   reading the list (an 8-week log is tens of entries). Add a path field and a
   matcher if the list outgrows one read.
 - No automatic minutes: Marcin's own number is the metric.
-- No public marketplace entry yet: the repo is local; the README's
-  `/plugin marketplace add <owner>/<repo>` needs the GitHub repo Marcin
-  names.
