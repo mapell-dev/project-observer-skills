@@ -1,0 +1,15 @@
+Creative Commons Attribution 4.0 International (CC BY 4.0)
+
+Copyright 2026 Marcin Szupke (mapell.dev)
+
+This work is licensed under CC BY 4.0. You may share and adapt it for any
+purpose, provided you give appropriate credit, link to the licence, and
+indicate if changes were made.
+
+Full legal code: https://creativecommons.org/licenses/by/4.0/legalcode
+
+This work adapts task-observer ("One Skill to Rule Them All") by Eoghan Henn
+/ rebelytics.com, https://github.com/rebelytics/one-skill-to-rule-them-all,
+licensed under CC BY 4.0. Changes: the observation log is scoped to one
+project and kept local, its review targets the project's own files, and a
+generalize step with a denylist leak check was added; project-review is new.

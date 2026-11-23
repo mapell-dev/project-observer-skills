@@ -1,0 +1,4 @@
+# fake project terms for the selftest
+Quokka Ledger
+Bramblecorp
+QKL-
