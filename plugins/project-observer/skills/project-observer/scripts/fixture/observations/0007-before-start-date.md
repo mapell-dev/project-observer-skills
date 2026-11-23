@@ -5,7 +5,7 @@ status: open
 category: tooling
 area: ci
 date: 2025-02-24
-session_context: setup before go-live
+session_context: setup before the start date
 skill: []
 recurs:
 resolved:

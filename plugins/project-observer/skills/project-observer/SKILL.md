@@ -50,7 +50,7 @@ python3 <base directory>/scripts/pobs.py list
 | `lint` | checks every record's frontmatter; exit 1 on errors |
 | `leakcheck [FILE ...]` | checks generalized entries, or any given file, against the denylist |
 | `archive` | moves observations resolved before today into `observations/archive/` |
-| `counts --start YYYY-MM-DD [--weeks 8] [--verify-commits]` | prints the experiment counts |
+| `counts --start YYYY-MM-DD [--weeks N] [--verify-commits]` | prints counts for a period |
 | `selftest` | runs all of the above on a fixture with fake project terms |
 
 ## Session start
@@ -195,4 +195,4 @@ scope. The review backs the log up.
   Load `references/review.md` first.
 - Generalize or export: before any text from this log leaves the project,
   including an article draft. Load `references/generalize.md` first.
-- Counts: `pobs.py counts --start <go-live date> --verify-commits`.
+- Counts: `pobs.py counts --start <start date> --verify-commits`.

@@ -12,7 +12,8 @@ Usage: python3 pobs.py [--log DIR] <command> [options]
   list [KIND]       one line per record; KIND is observations (default), generalized
                     or proposals
   archive           move observations resolved before today into observations/archive/
-  counts            print the experiment counts (M1 to M6, project-review proposals)
+  counts            print counts for a period (lessons, changes, held, leaks, recurrences,
+                    review minutes, project-review proposals)
                     --start YYYY-MM-DD  first day of week 1 (without it: ISO weeks, all dates)
                     --weeks N           run length in weeks (default 8)
                     --verify-commits    check each resolution_commit exists and touches
@@ -244,7 +245,7 @@ def lint(log):
         if st in RESOLVED and not (as_date(fm.get("resolved")) and fm.get("resolution")):
             errors.append(f"{p}: {st} needs resolved (date) and resolution")
         if fm.get("resolution_files") and not fm.get("resolution_commit"):
-            warnings.append(f"{p}: project file changed, commit not recorded yet (M2 does not count it)")
+            warnings.append(f"{p}: project file changed, commit not recorded yet (not counted as a change yet)")
         if fm.get("recurs"):
             t = as_int(fm["recurs"])
             if t not in by_id or t == as_int(fm["id"]):
@@ -455,14 +456,14 @@ def cmd_counts(log, args):
     print("# Project observer counts")
     print(f"log: {log}")
     print(f"window: {start} to {end - dt.timedelta(days=1)} ({weeks} weeks)" if start
-          else "window: all dates, ISO weeks (pass --start for experiment weeks)")
+          else "window: all dates, ISO weeks (pass --start to count weeks from a start date)")
     print(f"lessons: {len(lessons)} distinct, {len(recurs)} recurrences, "
           f"{len(obs) - len(window)} outside the window")
     n_pilot = {k: sum(1 for _, fm in load(log, k, archive=k == "observations") if fm and pilot(fm))
                for k in ("observations", "proposals", "reviews")}
     print("pilot entries left out of every count: " + ", ".join(f"{v} {k}" for k, v in n_pilot.items()))
 
-    print("\n## M1 lessons per week by category")
+    print("\n## lessons per week by category")
     print("| week | " + " | ".join(CATEGORIES) + " | recurrences |")
     print("|---" * (len(CATEGORIES) + 2) + "|")
     rows = sorted({week(as_date(fm["date"])) for fm in window}, key=lambda w: (len(w), w))
@@ -472,12 +473,12 @@ def cmd_counts(log, args):
         rec = sum(1 for fm in recurs if week(as_date(fm["date"])) == w)
         print(f"| {w} | " + " | ".join(map(str, cells)) + f" | {rec} |")
 
-    print("\n## M2 lessons turned into a committed change in a project file")
+    print("\n## lessons turned into a committed change in a project file")
     done = [fm for fm in lessons if fm.get("status") == "actioned" and fm.get("resolution_commit")
             and in_window(as_date(fm.get("resolved")))]
     waiting = [fm for fm in lessons if fm.get("resolution_files") and not fm.get("resolution_commit")]
-    print(f"M2 changed a project file, with commit: {pct(len(done), len(lessons))}")
-    print(f"M2 change made, commit not recorded yet: {len(waiting)}")
+    print(f"changed a project file, with commit: {pct(len(done), len(lessons))}")
+    print(f"change made, commit not recorded yet: {len(waiting)}")
     if verify:
         problems = []
         for fm in done:
@@ -491,16 +492,16 @@ def cmd_counts(log, args):
             missing = [f for f in files if f not in changed.splitlines()]
             if not files or missing:
                 problems.append(f"{fm['id']}: commit {sha} does not touch {missing or 'any listed file'}")
-        print(f"M2 commit check: {len(done) - len(problems)} ok, {len(problems)} problems")
+        print(f"commit check: {len(done) - len(problems)} ok, {len(problems)} problems")
         for line in problems:
             print("  -", line)
 
-    print("\n## M3 lessons CLAUDE.md or auto-memory already held (Marcin's week-8 label)")
+    print("\n## lessons CLAUDE.md or auto-memory already held (the user's end-of-period label)")
     held = {v: sum(1 for fm in lessons if fm.get("already_held", "") == v) for v in HELD}
-    print(f"M3 already held: held {held['held']}, not-held {held['not-held']}, "
+    print(f"already held: held {held['held']}, not-held {held['not-held']}, "
           f"ambiguous {held['ambiguous']}, unlabeled {held['']}")
 
-    print("\n## M4 leaks in generalized entries")
+    print("\n## leaks in generalized entries")
     terms = denylist(log)
     gens = [(p, fm) for p, fm in load(log, "generalized") if fm]
     lesson_ids = {as_int(fm["id"]) for fm in lessons}
@@ -511,13 +512,13 @@ def cmd_counts(log, args):
     human = {v: sum(1 for _, fm in gens if fm.get("human_read") == v) for v in HUMAN}
     missed = sum(1 for _, fm in gens if fm.get("human_read_first") == "leak"
                  and fm.get("leak_check_first") == "pass")
-    print(f"M4 generalized: {len(covered)} of {len(lessons)} lessons (missing: {len(lesson_ids - covered)})")
-    print(f"M4 leak check, first run failed: {first_fail}")
-    print(f"M4 leak check, failing now: {now_fail} (re-run against {len(terms)} denylist terms)")
-    print(f"M4 human read: ok {human['ok']}, leak {human['leak']}, pending {human['pending']}")
-    print(f"M4 leaks the script missed (first human read: leak, first leak check: pass): {missed}")
+    print(f"generalized: {len(covered)} of {len(lessons)} lessons (missing: {len(lesson_ids - covered)})")
+    print(f"leak check, first run failed: {first_fail}")
+    print(f"leak check, failing now: {now_fail} (re-run against {len(terms)} denylist terms)")
+    print(f"human read: ok {human['ok']}, leak {human['leak']}, pending {human['pending']}")
+    print(f"leaks the script missed (first human read: leak, first leak check: pass): {missed}")
 
-    print("\n## M5 recurrence")
+    print("\n## recurrence")
     after, before, after_ids = 0, 0, set()
     for fm in recurs:
         target = by_id.get(as_int(fm["recurs"]), {})
@@ -527,10 +528,10 @@ def cmd_counts(log, args):
             after_ids.add(as_int(fm["recurs"]))
         else:
             before += 1
-    print(f"M5 recurrences after the fix landed: {after} (lessons: {', '.join(map(str, sorted(after_ids))) or 'none'})")
-    print(f"M5 repeats before a fix: {before}")
+    print(f"recurrences after the fix landed: {after} (lessons: {', '.join(map(str, sorted(after_ids))) or 'none'})")
+    print(f"repeats before a fix: {before}")
 
-    print("\n## M6 review minutes")
+    print("\n## review minutes")
     revs = [fm for _, fm in load(log, "reviews") if fm and not pilot(fm) and in_window(as_date(fm.get("date")))]
     print("| week | observer reviews | observer minutes | diff reviews | diff minutes |")
     print("|---|---|---|---|---|")
@@ -542,7 +543,7 @@ def cmd_counts(log, args):
         print(f"| {w} | " + " | ".join(map(str, cell)) + " |")
     for k in ("observer", "diff"):
         rs = [fm for fm in revs if fm.get("kind") == k]
-        print(f"M6 {k}: {sum(as_int(fm.get('minutes')) or 0 for fm in rs)} min in {len(rs)} reviews")
+        print(f"{k}: {sum(as_int(fm.get('minutes')) or 0 for fm in rs)} min in {len(rs)} reviews")
 
     print("\n## project-review proposals")
     props = [fm for _, fm in load(log, "proposals") if fm and not pilot(fm) and in_window(as_date(fm.get("date")))]
@@ -650,7 +651,7 @@ def cmd_selftest(log_unused, args):
                "0001 actioned test-design recurs:- generalized:yes", "list: 9 observations")
         expect(run("list", "proposals"), "0003 pending lessons:1,5 run:2025-03-18-1030-diff")
 
-        # counts: every metric on the fixture, experiment weeks from --start
+        # counts: every metric on the fixture, weeks from --start
         out = run("counts", "--start", "2025-03-03", "--verify-commits")
         expect(out,
                "lessons: 4 distinct, 3 recurrences, 1 outside the window",
@@ -658,20 +659,20 @@ def cmd_selftest(log_unused, args):
                "| 1 | 1 | 1 | 0 | 0 | 0 | 0 | 1 |",
                "| 2 | 0 | 0 | 1 | 0 | 1 | 0 | 0 |",
                "| 3 | 0 | 0 | 0 | 0 | 0 | 0 | 2 |",
-               "M2 changed a project file, with commit: 1 of 4 (25%)",
-               "M2 change made, commit not recorded yet: 1",
-               "M2 commit check: 1 ok, 0 problems",
-               "M3 already held: held 1, not-held 1, ambiguous 1, unlabeled 1",
-               "M4 generalized: 3 of 4 lessons (missing: 1)",
-               "M4 leak check, first run failed: 1",
-               "M4 leak check, failing now: 0",
-               "M4 human read: ok 1, leak 1, pending 1",
-               "M4 leaks the script missed (first human read: leak, first leak check: pass): 1",
-               "M5 recurrences after the fix landed: 1 (lessons: 1)",
-               "M5 repeats before a fix: 2",
+               "changed a project file, with commit: 1 of 4 (25%)",
+               "change made, commit not recorded yet: 1",
+               "commit check: 1 ok, 0 problems",
+               "already held: held 1, not-held 1, ambiguous 1, unlabeled 1",
+               "generalized: 3 of 4 lessons (missing: 1)",
+               "leak check, first run failed: 1",
+               "leak check, failing now: 0",
+               "human read: ok 1, leak 1, pending 1",
+               "leaks the script missed (first human read: leak, first leak check: pass): 1",
+               "recurrences after the fix landed: 1 (lessons: 1)",
+               "repeats before a fix: 2",
                "| 1 | 1 | 25 | 0 | 0 |",
-               "M6 observer: 55 min in 2 reviews",
-               "M6 diff: 10 min in 1 reviews",
+               "observer: 55 min in 2 reviews",
+               "diff: 10 min in 1 reviews",
                "proposals: 3 (accepted 1, declined 1, pending 1)",
                "proposals accepted, of decided: 1 of 2 (50%)",
                "proposals per lesson: 1: 2, 2: 1, 5: 1")

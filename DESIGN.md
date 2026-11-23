@@ -76,6 +76,14 @@ The log in a project:
 
 ## Metrics to fields
 
+The M labels and the word "experiment" live only in this file, which is not
+part of the installed plugin. Everything the agent reads (SKILL.md, the
+references, the fixtures and `pobs.py` output) uses plain headings
+("lessons per week by category", "recurrence", "review minutes"), so the
+agent under observation is not told that its log is being measured
+(2026-11-23). The last column names the section each metric appears
+under.
+
 | metric | field(s) | where | set by | printed by `pobs.py counts` as |
 |---|---|---|---|---|
 | M1 lessons per week by category | `date`, `category` (test-design, fixtures-data, flaky-tests, tooling, agent-behavior, other); entries with `recurs` count apart | observation | agent | weekly table, experiment weeks from `--start` |

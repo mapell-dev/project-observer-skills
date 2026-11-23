@@ -69,7 +69,7 @@ directory written out as a literal path.
 
    A fix that already failed calls for a stronger form (a check instead of
    a rule, a helper instead of a rule): a recurrence after the fix
-   (`pobs.py counts` lists them under M5), or a mistake made while a rule
+   (`pobs.py counts` lists them under recurrence), or a mistake made while a rule
    against it already stood. Say which applies.
 
 4. **Present, then ask.** Show the buckets with their counts, then each
@@ -85,7 +85,7 @@ directory written out as a literal path.
    of a later review records the commit. For a decline set `status: declined`,
    `resolved: <today>` and `resolution: <reason>`. For a skill export,
    after the export set `status: actioned`, `resolved: <today>` and
-   `resolution: exported to <where>` (no project file, so the M2 count
+   `resolution: exported to <where>` (no project file, so the change count
    leaves it out, which is correct).
 
 6. **Generalize.** Every lesson without a generalized entry gets one now:

@@ -5,7 +5,7 @@ status: open
 category: tooling
 area: test runner
 date: 2025-03-04
-session_context: pilot, before predictions were written
+session_context: pilot, during the trial period
 skill: []
 recurs:
 pilot: true
