@@ -18,7 +18,10 @@ Eoghan Henn / rebelytics.com, CC BY 4.0.
 ## Install
 
 Both skills ship as one plugin, `project-observer`, in this repo's
-marketplace. In Claude Code:
+marketplace. Install both skills together: project-review runs
+project-observer's script from the sibling directory.
+
+### Claude Code
 
 ```
 /plugin marketplace add mapell-dev/project-observer-skills
@@ -28,6 +31,36 @@ marketplace. In Claude Code:
 The skills then appear as `project-observer:project-observer` and
 `project-observer:project-review`. The plugin also adds a SessionStart hook
 that prints one line, and only in a project whose log exists.
+
+### GitHub Copilot CLI
+
+Copilot CLI reads the same `.claude-plugin/` manifests:
+
+```bash
+copilot plugin marketplace add mapell-dev/project-observer-skills
+copilot plugin install project-observer@project-observer-skills
+```
+
+The SessionStart hook is written for Claude Code and has not been checked
+in Copilot, so do not rely on it there: ask for the project-observer skill
+by name in a project whose log exists.
+
+### Other agents (Agent Skills)
+
+Any agent that reads `SKILL.md` skills can use them without the plugin.
+The GitHub CLI (2.90 or later; `gh skill` is in public preview) installs
+both skills, scripts included, for the agent you name:
+
+```bash
+gh skill install mapell-dev/project-observer-skills --all --agent <agent> --scope user
+```
+
+`gh skill install --help` lists the `--agent` values (for example
+`github-copilot`, `cursor`, `codex`, `gemini-cli`). Add `--pin <tag or
+commit>` to stay on one version, and read what you install first with
+`gh skill preview`. This route installs the skills only, with no
+SessionStart hook: ask for the project-observer skill by name in a project
+whose log exists.
 
 Check the scripts on the bundled fixture from a clone of this repo:
 
