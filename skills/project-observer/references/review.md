@@ -22,22 +22,37 @@ directory written out as a literal path.
    answer set `resolution_commit`, `status: actioned` and
    `resolved: <today>`. A change still not committed stays as it is.
 
-3. **Read and bucket.** Read the body of every queued lesson, then give each
-   one destination:
+3. **Read and bucket.** Read the body of every queued lesson and sort it
+   first:
+
+   - **Mechanical**: the mistake has a fixed shape a tool can detect (a
+     banned call such as a fixed sleep, an import shape, a file in the
+     wrong folder, a missing `await`). It gets an automated check.
+   - **Judgement**: no tool could decide it. It gets one of the other
+     destinations.
+
+   Before proposing a new check, read the checks the project already has:
+   the lint and test scripts in its build file, the pre-commit config, the
+   CI workflow. A check that exists but is not wired in, or is broken, is
+   the change to propose. A project where no check runs on commit or in CI
+   is a finding of its own: say so in the review record.
+
+   Then give each lesson the first destination that fits:
 
    | destination | when |
    |---|---|
-   | CLAUDE.md rule | the lesson is a rule every session in this project should follow |
-   | personal instruction file | a rule for the user only, which the team's shared files should not carry |
-   | test | a test that should exist, or a test that checks the wrong thing |
+   | automated check | mechanical: a lint rule, type, test, pre-commit hook or CI job that fails on the mistake |
    | test helper or fixture | a shared helper, factory or fixture that would make the mistake impossible |
+   | test | a test that should exist, or a test that checks the wrong thing |
    | runbook or doc | a procedure people and agents follow by hand |
+   | CLAUDE.md rule | a judgement rule every session needs while it writes code; CLAUDE.md loads into every session, so a line here costs every session |
+   | personal instruction file | a rule for the user only, which the team's shared files should not carry |
    | skill | the lesson is about a skill: export it (`generalize.md`, Export) |
    | decline | already covered, a one-off, or not worth the change; say which |
 
    A lesson with a recurrence after its fix (`pobs.py counts` lists them
-   under M5) shows the first change did not hold: propose a different
-   destination or a stronger form (a helper instead of a rule), and say so.
+   under M5) shows the first change did not hold: propose a stronger form
+   (a check instead of a rule, a helper instead of a rule), and say so.
 
 4. **Present, then ask.** Show the buckets with their counts, then each
    lesson: id, title, destination, the exact change (the lines to add or

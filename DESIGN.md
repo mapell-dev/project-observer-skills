@@ -16,10 +16,16 @@ body. Four things differ:
    no shared file (not even `.gitignore`) changes and nothing reaches a
    commit. Every worktree shares one log, because the path comes from
    `git rev-parse --git-common-dir`.
-2. Its review proposes changes to the project's own files (CLAUDE.md, a
-   personal instruction file, tests, test helpers and fixtures, runbooks),
-   plus skills through export. The agent edits the working tree on approval;
-   Marcin commits through the team's normal process.
+2. Its review proposes changes to the project's own files, plus skills
+   through export. It first sorts each lesson as mechanical (a tool can
+   detect it) or judgement. Mechanical lessons get an automated check (lint
+   rule, test, pre-commit hook, CI job), and an existing check that is not
+   wired in comes before a new one. Judgement lessons go to a helper or
+   fixture, a test, a runbook, then CLAUDE.md or a personal instruction
+   file, in that order. The agent edits the working tree on approval;
+   Marcin commits through the team's normal process. (The check-first
+   order, the extra lesson kinds and the "quote the moment" rule come from
+   the `retro` skill in mattpocock-skills.)
 3. A generalize step writes a detail-free copy of each lesson, then a script
    checks it against a local denylist, then Marcin reads it. Only copies that
    pass both may leave: into the global task-observer log or an article.

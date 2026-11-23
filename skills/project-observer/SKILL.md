@@ -104,7 +104,14 @@ differently:
 - a tool, runner, CI or environment surprise;
 - the agent misreads a project convention, skips a step, or breaks a rule
   CLAUDE.md already states (log it anyway: the end-of-run label measures
-  exactly that).
+  exactly that);
+- the agent searched long for a file or fact, made a costly tool call for
+  little return, or needed information it could not reach (a log, a
+  service's state). These are environment lessons, usually `tooling`.
+
+Every lesson comes from a moment you can quote: the failing output, the
+command, the user's words. Advice with no such moment behind it is not a
+lesson.
 
 A typo fixed once with no pattern behind it is task context, not a lesson.
 
@@ -157,7 +164,7 @@ already_held:
 reference:
 ---
 
-**Issue:** <what happened, specific enough to understand in two months>
+**Issue:** <what happened, with the moment quoted (failing output, command, the user's words), specific enough to understand in two months>
 
 **Suggested improvement:** <the change, and the project file it belongs in>
 
