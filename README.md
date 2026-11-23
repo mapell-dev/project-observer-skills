@@ -86,19 +86,22 @@ project, from a session started in the project's checkout:
    the ticket prefix (`ABC-`). One term per line. Leave out ordinary words;
    they only make noise. The leak check compares every generalized lesson
    with this list, so do this before you export anything.
-3. **Activation.** With the Claude Code plugin, nothing more: the
-   SessionStart hook prints "Project observation log active" in every
-   session started in a project whose log exists. Other agents load a skill
-   only when they decide its description fits the request, and some list
-   extra skills by name alone, so a session can run start to finish without
-   it. Add this line to your personal instructions, which the agent reads
-   in every session:
+3. **Activation.** With the Claude Code plugin, the SessionStart hook
+   prints "Project observation log active" in every session started in a
+   project whose log exists. That line is one note among the session's
+   instructions: an agent can skip it, most likely when your personal
+   instructions tell it to start another skill first. Other agents load a
+   skill only when they decide its description fits the request, and some
+   list extra skills by name alone, so a session can run start to finish
+   without it. In every agent, Claude Code included, add this line to your
+   personal instructions, which the agent reads in every session:
 
    > In a repository with a `.project-observer/` directory, load the
    > project-observer skill and run its Session start steps before other
    > work.
 
-   For GitHub Copilot, in VS Code and in the CLI, that file is
+   For Claude Code that file is `~/.claude/CLAUDE.md`. For GitHub
+   Copilot, in VS Code and in the CLI, it is
    `~/.copilot/copilot-instructions.md` (create it if it is missing; start
    a new chat or session to pick it up; the CLI's `/instructions` lists
    what is loaded). For other agents, use their user-level instructions
@@ -109,13 +112,14 @@ project, from a session started in the project's checkout:
    `pilot: true`, and `counts` leaves them out. Tell it when the trial
    ends.
 
-If you also run task-observer, add a line to your own agent instructions
-(for Claude Code, `~/.claude/CLAUDE.md`) so it stays out of this project's
-details:
+If you also run task-observer, and especially if your instructions make it
+start every session, extend the line so both run and task-observer stays
+out of this project's details:
 
-> In a repo with an active `.project-observer/` log, write observations
-> there; task-observer gets only generalized exports that passed the leak
-> check.
+> In a repo with an active `.project-observer/` log, first load the
+> project-observer skill and run its Session start steps, then
+> task-observer's. Write observations to the project log; task-observer
+> gets only generalized exports that passed the leak check.
 
 ## Use it
 

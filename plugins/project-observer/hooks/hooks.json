@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "d=$(python3 \"${CLAUDE_PLUGIN_ROOT}/skills/project-observer/scripts/pobs.py\" root 2>/dev/null) && test -d \"$d\" && echo 'Project observation log active (.project-observer/): load the project-observer:project-observer skill. Observations from this project go to that log, not to the global task-observer log.' || true"
+            "command": "d=$(python3 \"${CLAUDE_PLUGIN_ROOT}/skills/project-observer/scripts/pobs.py\" root 2>/dev/null) && test -d \"$d\" && echo 'Project observation log active (.project-observer/). Before the first tool call, invoke the project-observer:project-observer skill and run its Session start steps; this is required, not optional, and applies alongside any other session-start skill. Observations from this project go to that log, not to the global task-observer log.' || true"
           }
         ]
       }
