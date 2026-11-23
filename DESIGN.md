@@ -92,12 +92,30 @@ Design choices behind the fields:
 ## Self-checks
 
 `python3 skills/project-observer/scripts/pobs.py selftest` builds a temp git
-repo, runs `init`, loads the fixture, and asserts 55 facts across every
+repo, runs `init`, loads the fixture, and asserts 57 facts across every
 command (ids, leak check, lint, list, counts M1 to M6 and proposals, archive,
 empty-denylist refusal). Mutation checks: weakening the term normalization,
 the recurrence date rule, the first-result rule, the ticket-prefix boundary
 or the `.git/info/exclude` write each turns the selftest red. Both skills
 pass task-observer's `validate-skill-bundle.py`.
+
+Application tests (2026-11-23): a fresh agent followed each SKILL.md in a
+fake project, with scripted user answers.
+
+- project-observer: set-up, two lessons logged, review, generalization and
+  leak check all ran; lint ended at 0 errors. The agent generalized
+  details the denylist did not hold ("invoice" became "an export flow").
+  Gaps it found, now fixed: a set-up request now skips the "no log, stop"
+  branch; category tiebreak (what the mistake was about, not who made
+  it); `reference:` defined; status stays `open` until the commit is
+  recorded; backup runs after the review record.
+- project-review: two findings on the test branch, both citing lessons;
+  one logged as a recurrence after the fix (M5). Its own comparison:
+  `code-review` would likely flag the fixed sleep, but neither the
+  recurrence nor the seed-deletion finding (no CLAUDE.md rule covers it).
+  Gaps fixed: `recurs` now always names the lesson's first observation;
+  an open run record (minutes not yet given) is a lint warning, not an
+  error.
 
 ## Decisions for Marcin
 
