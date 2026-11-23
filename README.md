@@ -68,8 +68,50 @@ Check the scripts on the bundled fixture from a clone of this repo:
 python3 plugins/project-observer/skills/project-observer/scripts/pobs.py selftest
 ```
 
-The skills do nothing in a project until `pobs.py init` has created its
-log; set-up steps are in
+## Set up a project
+
+The skills do nothing in a project until it has a log. Set one up once per
+project, from a session started in the project's checkout:
+
+1. Ask the agent to **set up project-observer**. It runs `pobs.py init`,
+   which creates `.project-observer/` and adds it to `.git/info/exclude`.
+   The output must read `ignored by git: yes; tracked files inside: none`;
+   anything else stops the set-up, and nothing is written to a tracked
+   file.
+2. **Fill in the denylist.** The agent shows the seeded
+   `.project-observer/denylist.txt` and asks for the terms it cannot guess:
+   client, product, service, team and people names, internal hostnames,
+   the ticket prefix (`ABC-`). One term per line. Leave out ordinary words;
+   they only make noise. The leak check compares every generalized lesson
+   with this list, so do this before you export anything.
+3. **Activation.** With the Claude Code plugin, nothing more: the
+   SessionStart hook prints "Project observation log active" in every
+   session started in a project whose log exists. Elsewhere, ask for the
+   project-observer skill by name at the start of a session.
+4. **Optional: a trial period.** If the first weeks should not count, tell
+   the agent the trial period is on. It then marks new entries
+   `pilot: true`, and `counts` leaves them out. Tell it when the trial
+   ends.
+
+If you also run task-observer, add a line to your own agent instructions
+(for Claude Code, `~/.claude/CLAUDE.md`) so it stays out of this project's
+details:
+
+> In a repo with an active `.project-observer/` log, write observations
+> there; task-observer gets only generalized exports that passed the leak
+> check.
+
+## Use it
+
+| when | say | what happens |
+|---|---|---|
+| a test fails for the wrong reason, you correct the agent, a fixture or tool trap bites | nothing, or "log this" | the agent writes a lesson to the log on its own; "log this" makes sure |
+| weekly (the agent offers it when the last review is over 7 days old) | "review the project log" | lessons become proposed changes: a check or test first, a CLAUDE.md or runbook line when no check can catch it. A new check must fail once before it counts |
+| before a lesson leaves the project | "generalize lesson 0007" or "export to task-observer" | a copy without project details, checked with `leakcheck`, then read by you |
+| before you push a branch | "project review" | project-review checks the diff against the lessons and proposes changes; it never edits code |
+| at the end of a period | "count the log from YYYY-MM-DD" | `pobs.py counts --start YYYY-MM-DD --weeks 8` prints lessons per week by category, how many became a change, how many your other instructions already held (you label that at the end), recurrences, leaks and review minutes |
+
+The commands behind these steps are listed in
 `plugins/project-observer/skills/project-observer/SKILL.md`.
 
 ## Where data lives
